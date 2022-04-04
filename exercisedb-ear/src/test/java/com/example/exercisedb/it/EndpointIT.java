@@ -1,5 +1,5 @@
 /*******************************************************************************
- * (c) Copyright IBM Corporation 2017.
+ * (c) Copyright IBM Corporation 2022.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ public class EndpointIT {
 
     @BeforeClass
     public static void init() {
-        URL = "http://localhost:9080/exercisedb-war";
+        URL = "http://localhost:9080/exercisedb-war/exercisedbServlet";
     }
 
     @Test
@@ -43,7 +43,7 @@ public class EndpointIT {
 
             String response = method.getResponseBodyAsString(1000);
 
-            assertTrue("Unexpected response body", response.contains("Hello EJB World."));
+            assertTrue("Unexpected response body", response.contains("Hello World"));
         } finally {
             method.releaseConnection();
         }  

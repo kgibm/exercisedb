@@ -1,5 +1,5 @@
 /*******************************************************************************
- * (c) Copyright IBM Corporation 2017.
+ * (c) Copyright IBM Corporation 2022.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,31 +18,24 @@ package com.example.exercisedb.ejb.web;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.example.exercisedb.ejb.SampleStatelessBean;
-
 /**
- * A servlet which injects a stateless EJB
+ * 
  */
-@WebServlet({"/", "/exercisedbServlet"})
-public class EJBServlet extends HttpServlet {
+@WebServlet({"/exercisedbServlet"})
+public class ExerciseDBServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-
-    @EJB
-    SampleStatelessBean statelessBean;
 
     @Override
     protected void doGet(HttpServletRequest request,
                          HttpServletResponse response) throws IOException {
         PrintWriter writer = response.getWriter();
 
-        // Call hello method on a stateless session bean
-        String message = statelessBean.hello();
+        String message = "Hello World";
 
         writer.println(message);
     }

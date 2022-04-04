@@ -23,7 +23,6 @@
     </properties>
     
     <modules>
-        <module>exercisedb-ejb</module>
         <module>exercisedb-war</module>
         <module>exercisedb-ear</module>
     </modules>
