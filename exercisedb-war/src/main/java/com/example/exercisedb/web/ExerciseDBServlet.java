@@ -69,8 +69,9 @@ public class ExerciseDBServlet extends HttpServlet {
 				break;
 			}
 			case "reset": {
+				dropTables();
 				writer = startResponse(request, response, started, HttpServletResponse.SC_OK);
-				dropTables(writer);
+				writer.println("Dropped schema " + SCHEMA);
 				ensureTables(writer);
 				finishResponse(writer, started);
 				break;
@@ -82,8 +83,9 @@ public class ExerciseDBServlet extends HttpServlet {
 				break;
 			}
 			case "droptables": {
+				dropTables();
 				writer = startResponse(request, response, started, HttpServletResponse.SC_OK);
-				dropTables(writer);
+				writer.println("Dropped schema " + SCHEMA);
 				finishResponse(writer, started);
 				break;
 			}
@@ -268,10 +270,9 @@ public class ExerciseDBServlet extends HttpServlet {
 		}
 	}
 
-	private void dropTables(PrintWriter writer) throws SQLException {
+	private void dropTables() throws SQLException {
 		try (Connection conn = getConnection()) {
 			executeSimpleQuery(writer, conn, "DROP SCHEMA IF EXISTS " + SCHEMA + " CASCADE");
-			writer.println("Dropped schema " + SCHEMA);
 		}
 	}
 
