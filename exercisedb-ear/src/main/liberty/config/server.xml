@@ -24,7 +24,9 @@
 
 	<dataSource jndiName="jdbc/database1">
 		<jdbcDriver libraryRef="jdbcLib" />
-		<properties serverName="localhost" portNumber="3306"
-			databaseName="database1" user="mysqluser1" password="letmein" currentSchema="schema1" />
+		<!-- https://openliberty.io/docs/latest/reference/config/dataSource.html#dataSource/properties.postgresql -->
+		<properties.postgresql serverName="localhost"
+			portNumber="5432" databaseName="database1" user="dbuser1"
+			password="letmein" currentSchema="schema1" />
 	</dataSource>
 </server>
