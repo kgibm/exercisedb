@@ -88,15 +88,15 @@ public class ExerciseDBServlet extends HttpServlet {
 				break;
 			}
 			case "insert": {
-				writer = startResponse(request, response, started, HttpServletResponse.SC_OK);
 				long id = insert();
+				writer = startResponse(request, response, started, HttpServletResponse.SC_OK);
 				writer.println("Inserted 1 row with ID " + id);
 				finishResponse(writer, started);
 				break;
 			}
 			case "insertselect": {
-				writer = startResponse(request, response, started, HttpServletResponse.SC_OK);
 				long id = insert();
+				writer = startResponse(request, response, started, HttpServletResponse.SC_OK);
 				writer.println("Inserted 1 row with ID " + id);
 				String data = select(id);
 				writer.println("Selected row " + id + " with data " + data);
@@ -104,8 +104,8 @@ public class ExerciseDBServlet extends HttpServlet {
 				break;
 			}
 			case "insertselectdelete": {
-				writer = startResponse(request, response, started, HttpServletResponse.SC_OK);
 				long id = insert();
+				writer = startResponse(request, response, started, HttpServletResponse.SC_OK);
 				writer.println("Inserted 1 row with ID " + id);
 				String data = select(id);
 				writer.println("Selected row " + id + " with data " + data);
@@ -115,8 +115,8 @@ public class ExerciseDBServlet extends HttpServlet {
 				break;
 			}
 			case "count": {
-				writer = startResponse(request, response, started, HttpServletResponse.SC_OK);
 				long count = count();
+				writer = startResponse(request, response, started, HttpServletResponse.SC_OK);
 				writer.println("Count of rows: " + count);
 				finishResponse(writer, started);
 				break;
