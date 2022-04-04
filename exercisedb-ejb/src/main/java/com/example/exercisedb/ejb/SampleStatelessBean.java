@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package wasdev.exercisedb.ejb;
+package com.example.exercisedb.ejb;
 
 import javax.ejb.Stateless;
 
