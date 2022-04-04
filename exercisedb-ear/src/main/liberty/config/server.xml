@@ -1,22 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <server description="exercisedb server">
 
-    <!-- Enable features -->
-    <featureManager>
-        <feature>webProfile-7.0</feature>
-    </featureManager>
+	<featureManager>
+		<feature>webProfile-7.0</feature>
+	</featureManager>
 
-    <!-- Encoded password can be generated using bin/securityUtility -->
-    <keyStore password="letmein"/>
+	<keyStore password="letmein" />
 
-    <basicRegistry id="basic" realm="BasicRealm">
-        <user name="user1" password="letmein"/>
-    </basicRegistry>
+	<basicRegistry id="basic" realm="BasicRealm">
+		<user name="webuser1" password="letmein" />
+	</basicRegistry>
 
-    <!-- To access this server from a remote client add a host attribute to the following element, e.g. host="*" -->
-    <httpEndpoint id="defaultHttpEndpoint"
-                  httpPort="9080"
-                  httpsPort="9443" />
-    
-    <enterpriseApplication id="exercisedb-ear" location="exercisedb-ear.ear" name="exercisedb-ear"/>
+	<httpEndpoint host="*" id="defaultHttpEndpoint"
+		httpPort="9080" httpsPort="9443" />
+
+	<enterpriseApplication id="exercisedb-ear"
+		location="exercisedb-ear.ear" name="exercisedb-ear" />
+
+	<!-- https://openliberty.io/docs/latest/relational-database-connections-JDBC.html -->
+	<library id="jdbcLib">
+		<fileset dir="jdbc" includes="*.jar" />
+	</library>
+
+	<dataSource jndiName="jdbc/database1">
+		<jdbcDriver libraryRef="jdbcLib" />
+		<properties serverName="localhost" portNumber="3306"
+			databaseName="database1" user="mysqluser1" password="letmein" currentSchema="schema1" />
+	</dataSource>
 </server>

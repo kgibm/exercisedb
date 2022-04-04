@@ -17,26 +17,72 @@ package com.example.exercisedb.web;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
+import javax.annotation.Resource;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.sql.DataSource;
 
 /**
  * 
  */
-@WebServlet({"/exercisedbServlet"})
+@WebServlet({ "/exercisedbServlet" })
 public class ExerciseDBServlet extends HttpServlet {
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    @Override
-    protected void doGet(HttpServletRequest request,
-                         HttpServletResponse response) throws IOException {
-        PrintWriter writer = response.getWriter();
+	@Resource(lookup = "jdbc/database1")
+	DataSource database1;
 
-        String message = "Hello World";
+	@Override
+	protected void service(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		response.setContentType("text/plain");
 
-        writer.println(message);
-    }
+		PrintWriter writer = response.getWriter();
+
+		writer.println("Request started at " + new Date());
+		writer.flush();
+
+		try {
+
+			String action = request.getParameter("action");
+			switch (action == null ? "" : action) {
+			case "listtables":
+				List<String> tableNames = getExistingTableNames();
+				writer.println("There are " + tableNames.size() + " tables in the database: " + tableNames);
+				break;
+			default:
+				writer.println("No action specified");
+				break;
+			}
+
+		} catch (Throwable e) {
+			e.printStackTrace(writer);
+		}
+
+		writer.println("Request finished at " + new Date());
+		writer.flush();
+	}
+
+	private List<String> getExistingTableNames() throws SQLException {
+		List<String> tableNames = new ArrayList<>();
+		try (Connection conn = database1.getConnection()) {
+			DatabaseMetaData dbm = conn.getMetaData();
+			try (ResultSet tables = dbm.getTables(null, null, null, null)) {
+				while (tables.next()) {
+					tableNames.add(tables.getString("TABLE_NAME"));
+
+				}
+			}
+		}
+		return tableNames;
+	}
 }

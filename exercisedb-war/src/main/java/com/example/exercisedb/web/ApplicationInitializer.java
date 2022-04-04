@@ -14,7 +14,7 @@ public class ApplicationInitializer {
 	private static final Logger LOG = Logger.getLogger(ApplicationInitializer.class.getName());
 
 	@PostConstruct
-	private void onStartup() throws Throwable {
+	private void onStartup() {
 		if (LOG.isLoggable(Level.INFO))
 			LOG.info(toString() + " started");
 
