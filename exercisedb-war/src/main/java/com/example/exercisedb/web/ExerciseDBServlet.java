@@ -258,10 +258,10 @@ public class ExerciseDBServlet extends HttpServlet {
 		List<String> tableNames = getExistingTableNames();
 		if (tableNames.size() == 0) {
 			try (Connection conn = getConnection()) {
-				executeSimpleQuery(writer, conn, "CREATE SCHEMA IF NOT EXISTS " + SCHEMA + "");
+				executeSimpleQuery(conn, "CREATE SCHEMA IF NOT EXISTS " + SCHEMA + "");
 				writer.println("Created schema");
 
-				executeSimpleQuery(writer, conn, "CREATE TABLE " + SCHEMA
+				executeSimpleQuery(conn, "CREATE TABLE " + SCHEMA
 						+ ".table1 (ID INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY, DATA1 TEXT)");
 				writer.println("Created table");
 			}
@@ -272,11 +272,11 @@ public class ExerciseDBServlet extends HttpServlet {
 
 	private void dropTables() throws SQLException {
 		try (Connection conn = getConnection()) {
-			executeSimpleQuery(writer, conn, "DROP SCHEMA IF EXISTS " + SCHEMA + " CASCADE");
+			executeSimpleQuery(conn, "DROP SCHEMA IF EXISTS " + SCHEMA + " CASCADE");
 		}
 	}
 
-	private boolean executeSimpleQuery(PrintWriter writer, Connection conn, String sql) throws SQLException {
+	private boolean executeSimpleQuery(Connection conn, String sql) throws SQLException {
 		try (PreparedStatement query = conn.prepareStatement(sql)) {
 			return query.execute();
 		}
