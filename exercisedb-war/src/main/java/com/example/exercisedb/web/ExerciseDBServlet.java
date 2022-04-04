@@ -22,9 +22,11 @@ import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -46,6 +48,8 @@ public class ExerciseDBServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	private static final String SCHEMA = "test1";
+
+	private static final String RANDOM_STRING = getRandomString(1024);
 
 	@Resource(lookup = "jdbc/database1")
 	DataSource database1;
@@ -82,6 +86,15 @@ public class ExerciseDBServlet extends HttpServlet {
 				finishResponse(writer, started);
 				break;
 			}
+			case "insert": {
+				PrintWriter writer = startResponse(request, response, started, HttpServletResponse.SC_OK);
+				long id = insert();
+				writer.println("Inserted 1 row with ID " + id);
+				String data = select(id);
+				writer.println("Selected row " + id + " with data " + data);
+				finishResponse(writer, started);
+				break;
+			}
 			case "testthrow": {
 				throw new Error("Test error");
 			}
@@ -102,6 +115,54 @@ public class ExerciseDBServlet extends HttpServlet {
 			e.printStackTrace(writer);
 			finishResponse(writer, started);
 		}
+	}
+
+	private long insert() throws SQLException {
+		try (Connection conn = getConnection()) {
+			long id = -1;
+			try (PreparedStatement sql = conn.prepareStatement("INSERT INTO " + SCHEMA + ".table1 (DATA1) values (?)",
+					Statement.RETURN_GENERATED_KEYS)) {
+				sql.setString(1, RANDOM_STRING);
+				int insertedRows = sql.executeUpdate();
+				if (insertedRows == 1) {
+					try (ResultSet generatedKeys = sql.getGeneratedKeys()) {
+						if (generatedKeys.next()) {
+							id = generatedKeys.getLong(1);
+						}
+					}
+					return id;
+				} else {
+					throw new SQLException("Expected 1 inserted row but received " + insertedRows);
+				}
+			}
+		}
+	}
+
+	private String select(long id) throws SQLException {
+		try (Connection conn = getConnection()) {
+			try (PreparedStatement sql = conn
+					.prepareStatement("SELECT DATA1 FROM " + SCHEMA + ".table1 WHERE ID = ?")) {
+				sql.setLong(1, id);
+				try (ResultSet rs = sql.executeQuery()) {
+					if (rs.next()) {
+						String data = rs.getString(1);
+						return data;
+					} else {
+						throw new SQLException("Expected to find row with ID " + id);
+					}
+				}
+			}
+		}
+	}
+
+	private static String getRandomString(int length) {
+		String chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+		StringBuilder sb = new StringBuilder();
+		Random random = new Random();
+		while (sb.length() < length) {
+			sb.append(chars.charAt(random.nextInt(chars.length())));
+		}
+		return sb.toString();
 	}
 
 	private Connection getConnection() throws SQLException {
@@ -145,7 +206,7 @@ public class ExerciseDBServlet extends HttpServlet {
 				writer.println("Created schema");
 
 				executeSimpleQuery(writer, conn, "CREATE TABLE " + SCHEMA
-						+ ".table1 (ID INT PRIMARY KEY generated always as identity, DATA1 TEXT)");
+						+ ".table1 (ID INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY, DATA1 TEXT)");
 				writer.println("Created table");
 			}
 		} else {
