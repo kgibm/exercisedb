@@ -52,7 +52,7 @@ public class ExerciseDBServlet extends HttpServlet {
 	private static final String RANDOM_STRING = getRandomString(1024);
 
 	@Resource(lookup = "jdbc/database1")
-	DataSource database1;
+	private DataSource database1;
 
 	@Override
 	protected void service(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -182,8 +182,7 @@ public class ExerciseDBServlet extends HttpServlet {
 
 	private long count() throws SQLException {
 		try (Connection conn = getConnection()) {
-			try (PreparedStatement sql = conn
-					.prepareStatement("SELECT COUNT(*) FROM " + SCHEMA + ".table1")) {
+			try (PreparedStatement sql = conn.prepareStatement("SELECT COUNT(*) FROM " + SCHEMA + ".table1")) {
 				try (ResultSet rs = sql.executeQuery()) {
 					if (rs.next()) {
 						long result = rs.getLong(1);
@@ -198,8 +197,7 @@ public class ExerciseDBServlet extends HttpServlet {
 
 	private void delete(long id) throws SQLException {
 		try (Connection conn = getConnection()) {
-			try (PreparedStatement sql = conn
-					.prepareStatement("DELETE FROM " + SCHEMA + ".table1 WHERE ID = ?")) {
+			try (PreparedStatement sql = conn.prepareStatement("DELETE FROM " + SCHEMA + ".table1 WHERE ID = ?")) {
 				sql.setLong(1, id);
 				int updatedRows = sql.executeUpdate();
 				if (updatedRows == 1) {
@@ -225,7 +223,10 @@ public class ExerciseDBServlet extends HttpServlet {
 		SQLException firstException = null;
 		for (int i = 0; i < 100; i++) {
 			try {
-				return getActualConnection();
+				Connection conn = database1.getConnection();
+				if (conn.isValid(0)) {
+					return conn;
+				}
 			} catch (SQLException s) {
 				if (firstException == null) {
 					firstException = s;
@@ -243,15 +244,10 @@ public class ExerciseDBServlet extends HttpServlet {
 				throw s;
 			}
 		}
-		throw firstException;
-	}
-
-	private Connection getActualConnection() throws SQLException {
-		Connection conn = database1.getConnection();
-		DatabaseMetaData dbm = conn.getMetaData();
-		try (ResultSet rs = dbm.getSchemas()) {
+		if (firstException == null) {
+			firstException = new SQLException("No valid connection found");
 		}
-		return conn;
+		throw firstException;
 	}
 
 	private void ensureTables(PrintWriter writer) throws SQLException {
