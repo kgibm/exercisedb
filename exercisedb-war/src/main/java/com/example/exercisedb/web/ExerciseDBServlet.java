@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -33,11 +34,13 @@ import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 
 /**
- * 
+ * Main database servlet
  */
 @WebServlet({ "/exercisedbServlet" })
 public class ExerciseDBServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+
+	private static final String SCHEMA = "test1";
 
 	@Resource(lookup = "jdbc/database1")
 	DataSource database1;
@@ -57,6 +60,7 @@ public class ExerciseDBServlet extends HttpServlet {
 			}
 			case "ensuretables": {
 				PrintWriter writer = startResponse(request, response, started, HttpServletResponse.SC_OK);
+				ensureTables(writer);
 				finishResponse(writer, started);
 				break;
 			}
@@ -82,6 +86,27 @@ public class ExerciseDBServlet extends HttpServlet {
 		}
 	}
 
+	private void ensureTables(PrintWriter writer) throws SQLException {
+		List<String> tableNames = getExistingTableNames();
+		if (tableNames.size() == 0) {
+			try (Connection conn = database1.getConnection()) {
+				executeSimpleQuery(writer, conn, "CREATE SCHEMA IF NOT EXISTS " + SCHEMA + "");
+				writer.println("Created schema");
+
+				executeSimpleQuery(writer, conn, "CREATE TABLE " + SCHEMA + ".table1 (ID INT NOT NULL, DATA1 TEXT)");
+				writer.println("Created table");
+			}
+		} else {
+			writer.println("Schema and tables already exist");
+		}
+	}
+
+	private boolean executeSimpleQuery(PrintWriter writer, Connection conn, String sql) throws SQLException {
+		try (PreparedStatement query = conn.prepareStatement(sql)) {
+			return query.execute();
+		}
+	}
+
 	private PrintWriter startResponse(HttpServletRequest request, HttpServletResponse response, Date started,
 			int status) throws IOException {
 		response.setStatus(status);
@@ -102,7 +127,7 @@ public class ExerciseDBServlet extends HttpServlet {
 		List<String> tableNames = new ArrayList<>();
 		try (Connection conn = database1.getConnection()) {
 			DatabaseMetaData dbm = conn.getMetaData();
-			try (ResultSet tables = dbm.getTables(null, null, null, null)) {
+			try (ResultSet tables = dbm.getTables(null, SCHEMA, null, null)) {
 				while (tables.next()) {
 					tableNames.add(tables.getString("TABLE_NAME"));
 

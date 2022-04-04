@@ -27,6 +27,6 @@
 		<!-- https://openliberty.io/docs/latest/reference/config/dataSource.html#dataSource/properties.postgresql -->
 		<properties.postgresql serverName="localhost"
 			portNumber="5432" databaseName="database1" user="dbuser1"
-			password="letmein" currentSchema="schema1" />
+			password="letmein" />
 	</dataSource>
 </server>
