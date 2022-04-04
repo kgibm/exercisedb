@@ -58,6 +58,13 @@ public class ExerciseDBServlet extends HttpServlet {
 				finishResponse(writer, started);
 				break;
 			}
+			case "reset": {
+				PrintWriter writer = startResponse(request, response, started, HttpServletResponse.SC_OK);
+				dropTables(writer);
+				ensureTables(writer);
+				finishResponse(writer, started);
+				break;
+			}
 			case "ensuretables": {
 				PrintWriter writer = startResponse(request, response, started, HttpServletResponse.SC_OK);
 				ensureTables(writer);
