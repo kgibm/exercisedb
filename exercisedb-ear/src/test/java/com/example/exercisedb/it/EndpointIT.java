@@ -27,7 +27,7 @@ public class EndpointIT {
 
     @BeforeClass
     public static void init() {
-        URL = "http://localhost:9080/exercisedb-war/exercisedbServlet";
+        URL = "http://localhost:9080/exercisedb/exercisedbServlet";
     }
 
     @Test

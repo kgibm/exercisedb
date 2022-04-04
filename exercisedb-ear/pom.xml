@@ -47,17 +47,23 @@
                     <version>7</version>
                     <fileNameMapping>no-version</fileNameMapping>
                     <generateApplicationXml>true</generateApplicationXml>
+                    <modules>
+                        <webModule>
+                            <groupId>com.example</groupId>
+                            <artifactId>exercisedb-war</artifactId>
+                            <contextRoot>/exercisedb</contextRoot>
+                        </webModule>
+                    </modules>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>io.openliberty.tools</groupId>
                 <artifactId>liberty-maven-plugin</artifactId>
-                <version>3.5.1</version>
                 <configuration>
                     <assemblyArtifact>
                         <groupId>io.openliberty</groupId>
                         <artifactId>openliberty-runtime</artifactId>
-                        <version>[21.0.0.3,)</version>
+                        <version>[22.0.0.1,)</version>
                         <type>zip</type>
                     </assemblyArtifact>
                     <serverName>exercisedbServer</serverName>

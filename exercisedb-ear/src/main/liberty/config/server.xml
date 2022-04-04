@@ -7,10 +7,10 @@
     </featureManager>
 
     <!-- Encoded password can be generated using bin/securityUtility -->
-    <keyStore password="change1me"/>
+    <keyStore password="letmein"/>
 
     <basicRegistry id="basic" realm="BasicRealm">
-        <user name="user1" password="change1me"/>
+        <user name="user1" password="letmein"/>
     </basicRegistry>
 
     <!-- To access this server from a remote client add a host attribute to the following element, e.g. host="*" -->
