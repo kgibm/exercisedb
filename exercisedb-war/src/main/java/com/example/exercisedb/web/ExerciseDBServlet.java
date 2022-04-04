@@ -44,32 +44,58 @@ public class ExerciseDBServlet extends HttpServlet {
 
 	@Override
 	protected void service(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		response.setContentType("text/plain");
-
-		PrintWriter writer = response.getWriter();
-
-		writer.println("Request started at " + new Date());
-		writer.flush();
-
+		Date started = new Date();
 		try {
-
 			String action = request.getParameter("action");
-			switch (action == null ? "" : action) {
-			case "listtables":
+			switch (action == null ? "" : action.toLowerCase()) {
+			case "listtables": {
 				List<String> tableNames = getExistingTableNames();
+				PrintWriter writer = startResponse(request, response, started, HttpServletResponse.SC_OK);
 				writer.println("There are " + tableNames.size() + " tables in the database: " + tableNames);
+				finishResponse(writer, started);
 				break;
+			}
+			case "ensuretables": {
+				PrintWriter writer = startResponse(request, response, started, HttpServletResponse.SC_OK);
+				finishResponse(writer, started);
+				break;
+			}
+			case "testthrow": {
+				throw new Error("Test error");
+			}
 			default:
-				writer.println("No action specified");
+				PrintWriter writer = startResponse(request, response, started, HttpServletResponse.SC_OK);
+				if (action == null || action.trim().length() == 0) {
+					writer.println("No action specified");
+				} else {
+					writer.println("Unknown action '" + action + "'");
+				}
+				finishResponse(writer, started);
 				break;
 			}
 
 		} catch (Throwable e) {
+			PrintWriter writer = startResponse(request, response, started,
+					HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			e.printStackTrace(writer);
+			finishResponse(writer, started);
 		}
+	}
 
-		writer.println("Request finished at " + new Date());
+	private PrintWriter startResponse(HttpServletRequest request, HttpServletResponse response, Date started,
+			int status) throws IOException {
+		response.setStatus(status);
+		response.setContentType("text/plain");
+		PrintWriter writer = response.getWriter();
+		writer.println("Request started at " + started);
 		writer.flush();
+		return writer;
+	}
+
+	private void finishResponse(PrintWriter writer, Date started) {
+		Date finished = new Date();
+		long diff = finished.getTime() - started.getTime();
+		writer.println("Request finished at " + finished + ". Processing took " + diff + " ms");
 	}
 
 	private List<String> getExistingTableNames() throws SQLException {
