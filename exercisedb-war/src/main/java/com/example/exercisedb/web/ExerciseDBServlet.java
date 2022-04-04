@@ -90,8 +90,33 @@ public class ExerciseDBServlet extends HttpServlet {
 				PrintWriter writer = startResponse(request, response, started, HttpServletResponse.SC_OK);
 				long id = insert();
 				writer.println("Inserted 1 row with ID " + id);
+				finishResponse(writer, started);
+				break;
+			}
+			case "insertselect": {
+				PrintWriter writer = startResponse(request, response, started, HttpServletResponse.SC_OK);
+				long id = insert();
+				writer.println("Inserted 1 row with ID " + id);
 				String data = select(id);
 				writer.println("Selected row " + id + " with data " + data);
+				finishResponse(writer, started);
+				break;
+			}
+			case "insertselectdelete": {
+				PrintWriter writer = startResponse(request, response, started, HttpServletResponse.SC_OK);
+				long id = insert();
+				writer.println("Inserted 1 row with ID " + id);
+				String data = select(id);
+				writer.println("Selected row " + id + " with data " + data);
+				delete(id);
+				writer.println("Deleted row with ID " + id);
+				finishResponse(writer, started);
+				break;
+			}
+			case "count": {
+				PrintWriter writer = startResponse(request, response, started, HttpServletResponse.SC_OK);
+				long count = count();
+				writer.println("Count of rows: " + count);
 				finishResponse(writer, started);
 				break;
 			}
@@ -150,6 +175,37 @@ public class ExerciseDBServlet extends HttpServlet {
 					} else {
 						throw new SQLException("Expected to find row with ID " + id);
 					}
+				}
+			}
+		}
+	}
+
+	private long count() throws SQLException {
+		try (Connection conn = getConnection()) {
+			try (PreparedStatement sql = conn
+					.prepareStatement("SELECT COUNT(*) FROM " + SCHEMA + ".table1")) {
+				try (ResultSet rs = sql.executeQuery()) {
+					if (rs.next()) {
+						long result = rs.getLong(1);
+						return result;
+					} else {
+						throw new SQLException("Expected to find count");
+					}
+				}
+			}
+		}
+	}
+
+	private void delete(long id) throws SQLException {
+		try (Connection conn = getConnection()) {
+			try (PreparedStatement sql = conn
+					.prepareStatement("DELETE FROM " + SCHEMA + ".table1 WHERE ID = ?")) {
+				sql.setLong(1, id);
+				int updatedRows = sql.executeUpdate();
+				if (updatedRows == 1) {
+					// nothing, successful
+				} else {
+					throw new SQLException("Expected 1 updated row but received " + updatedRows);
 				}
 			}
 		}
