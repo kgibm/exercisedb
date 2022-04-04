@@ -144,7 +144,8 @@ public class ExerciseDBServlet extends HttpServlet {
 				executeSimpleQuery(writer, conn, "CREATE SCHEMA IF NOT EXISTS " + SCHEMA + "");
 				writer.println("Created schema");
 
-				executeSimpleQuery(writer, conn, "CREATE TABLE " + SCHEMA + ".table1 (ID INT NOT NULL, DATA1 TEXT)");
+				executeSimpleQuery(writer, conn, "CREATE TABLE " + SCHEMA
+						+ ".table1 (ID INT PRIMARY KEY generated always as identity, DATA1 TEXT)");
 				writer.println("Created table");
 			}
 		} else {
@@ -153,16 +154,9 @@ public class ExerciseDBServlet extends HttpServlet {
 	}
 
 	private void dropTables(PrintWriter writer) throws SQLException {
-		List<String> tableNames = getExistingTableNames();
-		if (tableNames.size() > 0) {
-			try (Connection conn = getConnection()) {
-				for (String tableName : tableNames) {
-					executeSimpleQuery(writer, conn, "DROP TABLE " + SCHEMA + "." + tableName);
-					writer.println("Dropped table " + tableName);
-				}
-			}
-		} else {
-			writer.println("No tables to drop");
+		try (Connection conn = getConnection()) {
+			executeSimpleQuery(writer, conn, "DROP SCHEMA IF EXISTS " + SCHEMA + " CASCADE");
+			writer.println("Dropped schema " + SCHEMA);
 		}
 	}
 
