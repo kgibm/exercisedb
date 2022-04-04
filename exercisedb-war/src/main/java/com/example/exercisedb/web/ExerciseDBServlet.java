@@ -57,44 +57,45 @@ public class ExerciseDBServlet extends HttpServlet {
 	@Override
 	protected void service(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		Date started = new Date();
+		PrintWriter writer = null;
 		try {
 			String action = request.getParameter("action");
 			switch (action == null ? "" : action.toLowerCase()) {
 			case "listtables": {
 				List<String> tableNames = getExistingTableNames();
-				PrintWriter writer = startResponse(request, response, started, HttpServletResponse.SC_OK);
+				writer = startResponse(request, response, started, HttpServletResponse.SC_OK);
 				writer.println("There are " + tableNames.size() + " tables in the database: " + tableNames);
 				finishResponse(writer, started);
 				break;
 			}
 			case "reset": {
-				PrintWriter writer = startResponse(request, response, started, HttpServletResponse.SC_OK);
+				writer = startResponse(request, response, started, HttpServletResponse.SC_OK);
 				dropTables(writer);
 				ensureTables(writer);
 				finishResponse(writer, started);
 				break;
 			}
 			case "ensuretables": {
-				PrintWriter writer = startResponse(request, response, started, HttpServletResponse.SC_OK);
+				writer = startResponse(request, response, started, HttpServletResponse.SC_OK);
 				ensureTables(writer);
 				finishResponse(writer, started);
 				break;
 			}
 			case "droptables": {
-				PrintWriter writer = startResponse(request, response, started, HttpServletResponse.SC_OK);
+				writer = startResponse(request, response, started, HttpServletResponse.SC_OK);
 				dropTables(writer);
 				finishResponse(writer, started);
 				break;
 			}
 			case "insert": {
-				PrintWriter writer = startResponse(request, response, started, HttpServletResponse.SC_OK);
+				writer = startResponse(request, response, started, HttpServletResponse.SC_OK);
 				long id = insert();
 				writer.println("Inserted 1 row with ID " + id);
 				finishResponse(writer, started);
 				break;
 			}
 			case "insertselect": {
-				PrintWriter writer = startResponse(request, response, started, HttpServletResponse.SC_OK);
+				writer = startResponse(request, response, started, HttpServletResponse.SC_OK);
 				long id = insert();
 				writer.println("Inserted 1 row with ID " + id);
 				String data = select(id);
@@ -103,7 +104,7 @@ public class ExerciseDBServlet extends HttpServlet {
 				break;
 			}
 			case "insertselectdelete": {
-				PrintWriter writer = startResponse(request, response, started, HttpServletResponse.SC_OK);
+				writer = startResponse(request, response, started, HttpServletResponse.SC_OK);
 				long id = insert();
 				writer.println("Inserted 1 row with ID " + id);
 				String data = select(id);
@@ -114,7 +115,7 @@ public class ExerciseDBServlet extends HttpServlet {
 				break;
 			}
 			case "count": {
-				PrintWriter writer = startResponse(request, response, started, HttpServletResponse.SC_OK);
+				writer = startResponse(request, response, started, HttpServletResponse.SC_OK);
 				long count = count();
 				writer.println("Count of rows: " + count);
 				finishResponse(writer, started);
@@ -124,7 +125,7 @@ public class ExerciseDBServlet extends HttpServlet {
 				throw new Error("Test error");
 			}
 			default:
-				PrintWriter writer = startResponse(request, response, started, HttpServletResponse.SC_OK);
+				writer = startResponse(request, response, started, HttpServletResponse.SC_OK);
 				if (action == null || action.trim().length() == 0) {
 					writer.println("No action specified");
 				} else {
@@ -135,8 +136,9 @@ public class ExerciseDBServlet extends HttpServlet {
 			}
 
 		} catch (Throwable e) {
-			PrintWriter writer = startResponse(request, response, started,
-					HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			if (writer == null) {
+				writer = startResponse(request, response, started, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			}
 			e.printStackTrace(writer);
 			finishResponse(writer, started);
 		}
