@@ -18,12 +18,6 @@
     <dependencies>
         <dependency>
             <groupId>com.example</groupId>
-            <artifactId>exercisedb-ejb</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <type>ejb</type>
-        </dependency>
-        <dependency>
-            <groupId>com.example</groupId>
             <artifactId>exercisedb-war</artifactId>
             <version>1.0-SNAPSHOT</version>
             <type>war</type>
