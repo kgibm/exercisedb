@@ -5,6 +5,12 @@
 		<feature>webProfile-7.0</feature>
 	</featureManager>
 
+	<variable name="DB_HOST" defaultValue="localhost" />
+	<variable name="DB_PORT" defaultValue="5432" />
+	<variable name="DB_NAME" defaultValue="database1" />
+	<variable name="DB_USER" defaultValue="dbuser1" />
+	<variable name="DB_PASS" defaultValue="letmein" />
+
 	<keyStore password="letmein" />
 
 	<basicRegistry id="basic" realm="BasicRealm">
@@ -25,8 +31,8 @@
 	<dataSource jndiName="jdbc/database1">
 		<jdbcDriver libraryRef="jdbcLib" />
 		<!-- https://openliberty.io/docs/latest/reference/config/dataSource.html#dataSource/properties.postgresql -->
-		<properties.postgresql serverName="localhost"
-			portNumber="5432" databaseName="database1" user="dbuser1"
-			password="letmein" />
+		<properties.postgresql serverName="${DB_HOST}"
+			portNumber="${DB_PORT}" databaseName="${DB_NAME}" user="${DB_USER}"
+			password="${DB_PASS}" />
 	</dataSource>
 </server>
