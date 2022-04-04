@@ -64,6 +64,12 @@ public class ExerciseDBServlet extends HttpServlet {
 				finishResponse(writer, started);
 				break;
 			}
+			case "droptables": {
+				PrintWriter writer = startResponse(request, response, started, HttpServletResponse.SC_OK);
+				dropTables(writer);
+				finishResponse(writer, started);
+				break;
+			}
 			case "testthrow": {
 				throw new Error("Test error");
 			}
@@ -98,6 +104,20 @@ public class ExerciseDBServlet extends HttpServlet {
 			}
 		} else {
 			writer.println("Schema and tables already exist");
+		}
+	}
+
+	private void dropTables(PrintWriter writer) throws SQLException {
+		List<String> tableNames = getExistingTableNames();
+		if (tableNames.size() > 0) {
+			try (Connection conn = database1.getConnection()) {
+				for (String tableName : tableNames) {
+					executeSimpleQuery(writer, conn, "DROP TABLE " + SCHEMA + "." + tableName);
+					writer.println("Dropped table " + tableName);
+				}
+			}
+		} else {
+			writer.println("No tables to drop");
 		}
 	}
 
