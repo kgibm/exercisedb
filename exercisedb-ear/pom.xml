@@ -13,7 +13,7 @@
 
     <packaging>ear</packaging>
 
-    <name>EAR Module</name>
+    <name>ExerciseDB EAR Project</name>
 
     <dependencies>
         <dependency>

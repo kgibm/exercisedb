@@ -12,7 +12,7 @@
     <artifactId>exercisedb-war</artifactId>
     <packaging>war</packaging>
 
-    <name>WAR Module</name>
+    <name>ExerciseDB WAR Project</name>
 
     <dependencies>
         <dependency>
