@@ -11,7 +11,7 @@ mvn clean install
 ### Run in the foreground 
 
 ```
-cd exercisedb-ear; mvn liberty:run
+mvn liberty:run
 ```
 
 (stop with Ctrl+C)
@@ -21,7 +21,7 @@ Browse to [http://localhost:9080/exercisedb/](http://localhost:9080/exercisedb/)
 ### Run in the background
 
 ```
-cd exercisedb-ear; mvn liberty:run
+mvn liberty:start
 ```
 
 (stop with `mvn liberty:stop` from same directory)
