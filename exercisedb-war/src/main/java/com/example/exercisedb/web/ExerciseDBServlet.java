@@ -25,19 +25,27 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.Resource;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
+import javax.transaction.UserTransaction;
 
 /**
  * Main database servlet
  */
 @WebServlet({ "/exercisedbServlet" })
 public class ExerciseDBServlet extends HttpServlet {
+
+	private static final Logger LOG = Logger.getLogger(ExerciseDBServlet.class.getCanonicalName());
+
 	private static final long serialVersionUID = 1L;
 
 	private static final String SCHEMA = "test1";
@@ -99,10 +107,43 @@ public class ExerciseDBServlet extends HttpServlet {
 		}
 	}
 
+	private Connection getConnection() throws SQLException {
+		SQLException firstException = null;
+		for (int i = 0; i < 100; i++) {
+			try {
+				return getActualConnection();
+			} catch (SQLException s) {
+				if (firstException == null) {
+					firstException = s;
+				}
+				String message = s.getMessage();
+				if (message != null) {
+					if (message.contains("Connection has been closed")
+							|| message.contains("terminating connection due to administrator command")) {
+						// Stale exception so try again
+						if (LOG.isLoggable(Level.WARNING))
+							LOG.warning("getConnection received stale connection: " + s);
+						continue;
+					}
+				}
+				throw s;
+			}
+		}
+		throw firstException;
+	}
+
+	private Connection getActualConnection() throws SQLException {
+		Connection conn = database1.getConnection();
+		DatabaseMetaData dbm = conn.getMetaData();
+		try (ResultSet rs = dbm.getSchemas()) {
+		}
+		return conn;
+	}
+
 	private void ensureTables(PrintWriter writer) throws SQLException {
 		List<String> tableNames = getExistingTableNames();
 		if (tableNames.size() == 0) {
-			try (Connection conn = database1.getConnection()) {
+			try (Connection conn = getConnection()) {
 				executeSimpleQuery(writer, conn, "CREATE SCHEMA IF NOT EXISTS " + SCHEMA + "");
 				writer.println("Created schema");
 
@@ -117,7 +158,7 @@ public class ExerciseDBServlet extends HttpServlet {
 	private void dropTables(PrintWriter writer) throws SQLException {
 		List<String> tableNames = getExistingTableNames();
 		if (tableNames.size() > 0) {
-			try (Connection conn = database1.getConnection()) {
+			try (Connection conn = getConnection()) {
 				for (String tableName : tableNames) {
 					executeSimpleQuery(writer, conn, "DROP TABLE " + SCHEMA + "." + tableName);
 					writer.println("Dropped table " + tableName);
@@ -152,7 +193,7 @@ public class ExerciseDBServlet extends HttpServlet {
 
 	private List<String> getExistingTableNames() throws SQLException {
 		List<String> tableNames = new ArrayList<>();
-		try (Connection conn = database1.getConnection()) {
+		try (Connection conn = getConnection()) {
 			DatabaseMetaData dbm = conn.getMetaData();
 			try (ResultSet tables = dbm.getTables(null, SCHEMA, null, null)) {
 				while (tables.next()) {
