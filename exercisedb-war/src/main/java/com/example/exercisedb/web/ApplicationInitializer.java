@@ -16,23 +16,24 @@ import com.example.exercisedb.Database;
 @Startup
 public class ApplicationInitializer {
 
-	private static final Logger LOG = Logger.getLogger(ApplicationInitializer.class.getName());
+	private static final String CLASS = ApplicationInitializer.class.getName();
+	private static final Logger LOG = Logger.getLogger(CLASS);
 
-	@Resource(lookup = "jdbc/database1")
+	@Resource(lookup = Database.JNDINAME)
 	private DataSource database;
 
 	@PostConstruct
 	private void onStartup() {
-		if (LOG.isLoggable(Level.INFO))
-			LOG.info(toString() + " started");
+		if (LOG.isLoggable(Level.FINER))
+			LOG.entering(CLASS, "onStartup");
 
 		try {
-			
+
 			Database.ensureTables(database);
-			
+
 			if (LOG.isLoggable(Level.INFO))
 				LOG.info(toString() + " confirmed " + Database.SCHEMA + "." + Database.TABLE + " exists");
-			
+
 		} catch (SQLException e) {
 			if (LOG.isLoggable(Level.SEVERE)) {
 				LOG.severe("Could not initialize database: " + e);
@@ -40,7 +41,7 @@ public class ApplicationInitializer {
 			}
 		}
 
-		if (LOG.isLoggable(Level.INFO))
-			LOG.info(toString() + " finished");
+		if (LOG.isLoggable(Level.FINER))
+			LOG.exiting(CLASS, "onStartup");
 	}
 }

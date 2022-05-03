@@ -16,6 +16,7 @@ import javax.sql.DataSource;
 public class Database {
 	private static final Logger LOG = Logger.getLogger(Database.class.getCanonicalName());
 
+	public static final String JNDINAME = "jdbc/maindb";
 	public static final String SCHEMA = "test1";
 	public static final String TABLE = "table1";
 

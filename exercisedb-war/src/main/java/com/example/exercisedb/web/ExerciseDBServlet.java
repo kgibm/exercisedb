@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.Resource;
@@ -39,12 +40,12 @@ import com.example.exercisedb.Database;
 @ServletSecurity(@HttpConstraint(rolesAllowed = "users"))
 public class ExerciseDBServlet extends HttpServlet {
 
-	@SuppressWarnings("unused")
-	private static final Logger LOG = Logger.getLogger(ExerciseDBServlet.class.getCanonicalName());
+	private static final String CLASS = ExerciseDBServlet.class.getCanonicalName();
+	private static final Logger LOG = Logger.getLogger(CLASS);
 
 	private static final long serialVersionUID = 1L;
 
-	@Resource(lookup = "jdbc/database1")
+	@Resource(lookup = Database.JNDINAME)
 	private DataSource database;
 
 	@Override
@@ -53,6 +54,10 @@ public class ExerciseDBServlet extends HttpServlet {
 		PrintWriter writer = null;
 		try {
 			String action = request.getParameter("action");
+
+			if (LOG.isLoggable(Level.FINER))
+				LOG.entering(CLASS, "service", action);
+
 			switch (action == null ? "" : action.toLowerCase()) {
 			case "listtables": {
 				List<String> tableNames = Database.getExistingTableNames(database);
@@ -145,6 +150,9 @@ public class ExerciseDBServlet extends HttpServlet {
 			e.printStackTrace(writer);
 			finishResponse(writer, started);
 		}
+
+		if (LOG.isLoggable(Level.FINER))
+			LOG.exiting(CLASS, "service");
 	}
 
 	private PrintWriter startResponse(HttpServletRequest request, HttpServletResponse response, Date started,
