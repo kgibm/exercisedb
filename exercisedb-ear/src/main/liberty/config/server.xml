@@ -15,6 +15,9 @@
 
 	<basicRegistry id="basic" realm="BasicRealm">
 		<user name="user1" password="password" />
+		<group name="users">
+			<member name="user1" />
+		</group>
 	</basicRegistry>
 
 	<httpEndpoint host="*" id="defaultHttpEndpoint"
@@ -24,7 +27,7 @@
 		location="exercisedb-ear.ear" name="exercisedb-ear">
 		<application-bnd>
 			<security-role name="users">
-				<user name="user1" />
+				<group name="users" />
 			</security-role>
 		</application-bnd>
 	</enterpriseApplication>
