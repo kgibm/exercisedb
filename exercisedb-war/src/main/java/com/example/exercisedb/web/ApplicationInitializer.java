@@ -27,10 +27,12 @@ public class ApplicationInitializer {
 			LOG.info(toString() + " started");
 
 		try {
-			Database.dropTables(database);
+			
 			Database.ensureTables(database);
+			
 			if (LOG.isLoggable(Level.INFO))
-				LOG.info(toString() + " created table " + Database.SCHEMA + "." + Database.TABLE);
+				LOG.info(toString() + " confirmed " + Database.SCHEMA + "." + Database.TABLE + " exists");
+			
 		} catch (SQLException e) {
 			if (LOG.isLoggable(Level.SEVERE)) {
 				LOG.severe("Could not initialize database: " + e);

@@ -14,7 +14,7 @@ mvn clean install
 podman run -it --rm --ulimit memlock=-1:-1 \
            --name postgres \
            -e POSTGRES_USER=dbuser1 \
-           -e POSTGRES_PASSWORD=letmein \
+           -e POSTGRES_PASSWORD=password \
            -e POSTGRES_DB=database1 \
            -p 5432:5432 \
            postgres

@@ -8,7 +8,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -20,13 +19,46 @@ public class Database {
 	public static final String SCHEMA = "test1";
 	public static final String TABLE = "table1";
 
-	private static final String RANDOM_STRING = getRandomString(1024);
+	private static final String RANDOM_STRING = Utilities.getRandomString(1024);
+
+	public static boolean ensureTables(DataSource database) throws SQLException {
+		List<String> tableNames = getExistingTableNames(database);
+		if (tableNames.size() == 0) {
+			try (Connection conn = getConnection(database)) {
+				executeSimpleQuery(conn, "CREATE SCHEMA IF NOT EXISTS " + SCHEMA + "");
+				executeSimpleQuery(conn, "CREATE TABLE IF NOT EXISTS " + SCHEMA + "." + TABLE
+						+ " (ID INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY, DATA1 TEXT)");
+				return true;
+			}
+		} else {
+			return false;
+		}
+	}
+
+	public static boolean executeSimpleQuery(Connection conn, String sql) throws SQLException {
+		try (PreparedStatement query = conn.prepareStatement(sql)) {
+			return query.execute();
+		}
+	}
+
+	public static List<String> getExistingTableNames(DataSource database) throws SQLException {
+		List<String> tableNames = new ArrayList<>();
+		try (Connection conn = getConnection(database)) {
+			DatabaseMetaData dbm = conn.getMetaData();
+			try (ResultSet tables = dbm.getTables(null, SCHEMA, null, null)) {
+				while (tables.next()) {
+					tableNames.add(tables.getString("TABLE_NAME"));
+				}
+			}
+		}
+		return tableNames;
+	}
 
 	public static long insert(DataSource database) throws SQLException {
 		try (Connection conn = getConnection(database)) {
 			long id = -1;
-			try (PreparedStatement sql = conn.prepareStatement("INSERT INTO " + SCHEMA + "." + TABLE + " (DATA1) values (?)",
-					Statement.RETURN_GENERATED_KEYS)) {
+			try (PreparedStatement sql = conn.prepareStatement(
+					"INSERT INTO " + SCHEMA + "." + TABLE + " (DATA1) values (?)", Statement.RETURN_GENERATED_KEYS)) {
 				sql.setString(1, RANDOM_STRING);
 				int insertedRows = sql.executeUpdate();
 				if (insertedRows == 1) {
@@ -77,7 +109,8 @@ public class Database {
 
 	public static void delete(DataSource database, long id) throws SQLException {
 		try (Connection conn = getConnection(database)) {
-			try (PreparedStatement sql = conn.prepareStatement("DELETE FROM " + SCHEMA + "." + TABLE + " WHERE ID = ?")) {
+			try (PreparedStatement sql = conn
+					.prepareStatement("DELETE FROM " + SCHEMA + "." + TABLE + " WHERE ID = ?")) {
 				sql.setLong(1, id);
 				int updatedRows = sql.executeUpdate();
 				if (updatedRows == 1) {
@@ -87,16 +120,6 @@ public class Database {
 				}
 			}
 		}
-	}
-
-	public static String getRandomString(int length) {
-		String chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
-		StringBuilder sb = new StringBuilder();
-		Random random = new Random();
-		while (sb.length() < length) {
-			sb.append(chars.charAt(random.nextInt(chars.length())));
-		}
-		return sb.toString();
 	}
 
 	public static Connection getConnection(DataSource database) throws SQLException {
@@ -130,44 +153,9 @@ public class Database {
 		throw firstException;
 	}
 
-	public static boolean ensureTables(DataSource database) throws SQLException {
-		List<String> tableNames = getExistingTableNames(database);
-		if (tableNames.size() == 0) {
-			try (Connection conn = getConnection(database)) {
-				executeSimpleQuery(conn, "CREATE SCHEMA IF NOT EXISTS " + SCHEMA + "");
-				executeSimpleQuery(conn, "CREATE TABLE " + SCHEMA
-						+ "." + TABLE + " (ID INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY, DATA1 TEXT)");
-				return true;
-			}
-		} else {
-
-			return false;
-		}
-	}
-
 	public static void dropTables(DataSource database) throws SQLException {
 		try (Connection conn = getConnection(database)) {
 			executeSimpleQuery(conn, "DROP SCHEMA IF EXISTS " + SCHEMA + " CASCADE");
 		}
-	}
-
-	public static boolean executeSimpleQuery(Connection conn, String sql) throws SQLException {
-		try (PreparedStatement query = conn.prepareStatement(sql)) {
-			return query.execute();
-		}
-	}
-
-	public static List<String> getExistingTableNames(DataSource database) throws SQLException {
-		List<String> tableNames = new ArrayList<>();
-		try (Connection conn = getConnection(database)) {
-			DatabaseMetaData dbm = conn.getMetaData();
-			try (ResultSet tables = dbm.getTables(null, SCHEMA, null, null)) {
-				while (tables.next()) {
-					tableNames.add(tables.getString("TABLE_NAME"));
-
-				}
-			}
-		}
-		return tableNames;
 	}
 }

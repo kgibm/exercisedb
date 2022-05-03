@@ -9,19 +9,25 @@
 	<variable name="DB_PORT" defaultValue="5432" />
 	<variable name="DB_NAME" defaultValue="database1" />
 	<variable name="DB_USER" defaultValue="dbuser1" />
-	<variable name="DB_PASS" defaultValue="letmein" />
+	<variable name="DB_PASS" defaultValue="password" />
 
 	<keyStore password="letmein" />
 
 	<basicRegistry id="basic" realm="BasicRealm">
-		<user name="webuser1" password="letmein" />
+		<user name="user1" password="password" />
 	</basicRegistry>
 
 	<httpEndpoint host="*" id="defaultHttpEndpoint"
 		httpPort="9080" httpsPort="9443" />
 
 	<enterpriseApplication id="exercisedb-ear"
-		location="exercisedb-ear.ear" name="exercisedb-ear" />
+		location="exercisedb-ear.ear" name="exercisedb-ear">
+		<application-bnd>
+			<security-role name="users">
+				<user name="user1" />
+			</security-role>
+		</application-bnd>
+	</enterpriseApplication>
 
 	<!-- https://openliberty.io/docs/latest/relational-database-connections-JDBC.html -->
 	<library id="jdbcLib">
@@ -30,6 +36,7 @@
 
 	<dataSource jndiName="jdbc/database1">
 		<jdbcDriver libraryRef="jdbcLib" />
+
 		<!-- https://openliberty.io/docs/latest/reference/config/dataSource.html#dataSource/properties.postgresql -->
 		<properties.postgresql serverName="${DB_HOST}"
 			portNumber="${DB_PORT}" databaseName="${DB_NAME}" user="${DB_USER}"

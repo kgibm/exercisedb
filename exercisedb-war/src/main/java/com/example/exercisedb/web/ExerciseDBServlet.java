@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import javax.annotation.Resource;
+import javax.servlet.annotation.HttpConstraint;
+import javax.servlet.annotation.ServletSecurity;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -34,6 +36,7 @@ import com.example.exercisedb.Database;
  * Main database servlet
  */
 @WebServlet({ "/exercisedbServlet" })
+@ServletSecurity(@HttpConstraint(rolesAllowed = "users"))
 public class ExerciseDBServlet extends HttpServlet {
 
 	@SuppressWarnings("unused")
