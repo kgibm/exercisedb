@@ -74,8 +74,8 @@ public class User implements Callable<UserResult> {
 
 	@Override
 	public UserResult call() throws Exception {
-		if (LOG.isLoggable(Level.INFO))
-			LOG.info(this + " started " + totalRequests + " requests");
+		if (LOG.isLoggable(Level.FINE))
+			LOG.fine(this + " started " + totalRequests + " requests");
 
 		String encoding = null;
 		if (userName != null && userName.length() > 0) {
@@ -109,8 +109,8 @@ public class User implements Callable<UserResult> {
 			}
 		}
 
-		if (LOG.isLoggable(Level.INFO))
-			LOG.info(this + " finished " + totalRequests + " requests");
+		if (LOG.isLoggable(Level.FINE))
+			LOG.fine(this + " finished " + totalRequests + " requests");
 
 		return new UserResult();
 	}
