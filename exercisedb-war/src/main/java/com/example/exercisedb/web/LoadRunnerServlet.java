@@ -34,7 +34,8 @@ import javax.servlet.http.HttpServletResponse;
 import com.example.exercisedb.loadrunner.LoadRunner;
 
 /**
- * Load runner servlet
+ * Load runner servlet. Example usage:
+ * http://localhost:9080/exercisedb/loadrunnerServlet?url=https%3A%2F%2Flocalhost%3A9443%2Fexercisedb&user=user1&password=password&activity=insertselectdelete&concurrentusers=1&totalrequests=1
  */
 @WebServlet({ "/" + LoadRunnerServlet.URL })
 @ServletSecurity(@HttpConstraint(rolesAllowed = "users"))
@@ -49,7 +50,7 @@ public class LoadRunnerServlet extends HttpServlet {
 
 	@Resource(lookup = "concurrent/executorService1")
 	private ManagedExecutorService executorService;
-	
+
 	@Override
 	protected void service(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		Date started = new Date();
@@ -89,8 +90,15 @@ public class LoadRunnerServlet extends HttpServlet {
 				throw new IllegalArgumentException("Total requests must be greater than 0");
 			}
 
-			String info = "Starting load runner to " + target + " with " + concurrentusers
-					+ " concurrent users and " + totalrequests + " total requests";
+			String user = request.getParameter("user");
+			String password = request.getParameter("password");
+
+			String info = "Starting load runner to " + target + " with " + concurrentusers + " concurrent users and "
+					+ totalrequests + " total requests";
+
+			if (user != null && user.length() > 0) {
+				info += " using user " + user;
+			}
 
 			if (LOG.isLoggable(Level.INFO))
 				LOG.info(info);
@@ -101,6 +109,8 @@ public class LoadRunnerServlet extends HttpServlet {
 			loadRunner.setConcurrentUsers(concurrentusers);
 			loadRunner.setTotalRequests(totalrequests);
 			loadRunner.setExecutorService(executorService);
+			loadRunner.setUserName(user);
+			loadRunner.setPassword(password);
 			executorService.submit(loadRunner);
 
 			writer = startResponse(request, response, started, HttpServletResponse.SC_OK);

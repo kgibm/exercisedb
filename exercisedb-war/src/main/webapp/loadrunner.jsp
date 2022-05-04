@@ -22,7 +22,7 @@
         line-height:1.2;
       }
       
-      input[type=text] {
+      .fullwidth {
       	width: 100%;
       }
       
@@ -37,7 +37,15 @@
     <form action="<%= LoadRunnerServlet.URL %>" method="get">
         <p>
         	<label for="url">URL with context root (e.g. https://localhost:9443/exercisedb):</label><br />
-    		<input type="text" name="url" placeholder="URL with context root" required />
+    		<input type="text" name="url" placeholder="URL with context root" class="fullwidth" required />
+    	</p>
+        <p>
+        	<label for="user">User:</label><br />
+    		<input type="text" name="user" placeholder="User" />
+    	</p>
+        <p>
+        	<label for="password">Password:</label><br />
+    		<input type="password" name="password" placeholder="Password" />
     	</p>
         <p>
         	<label for="activity">Activity:</label><br />

@@ -33,6 +33,8 @@ public class LoadRunner implements Callable<LoadRunnerResult> {
 	private URL target;
 	private int concurrentUsers;
 	private int totalRequests;
+	private String userName;
+	private String password;
 	private ManagedExecutorService executorService;
 
 	@Override
@@ -60,8 +62,12 @@ public class LoadRunner implements Callable<LoadRunnerResult> {
 	}
 
 	private User createTask() {
-		User task = new User();
-		return task;
+		User user = new User();
+		user.setTarget(target);
+		user.setTotalRequests(totalRequests / concurrentUsers);
+		user.setUserName(userName);
+		user.setPassword(password);
+		return user;
 	}
 
 	public URL getTarget() {
@@ -94,5 +100,21 @@ public class LoadRunner implements Callable<LoadRunnerResult> {
 
 	public void setExecutorService(ManagedExecutorService executorService) {
 		this.executorService = executorService;
+	}
+
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String user) {
+		this.userName = user;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 }
