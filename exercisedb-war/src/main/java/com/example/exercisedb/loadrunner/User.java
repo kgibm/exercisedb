@@ -85,7 +85,8 @@ public class User implements Callable<UserResult> {
 		try {
 			for (int i = 0; i < totalRequests; i++) {
 				try (CloseableHttpClient httpClient = HttpClients.custom()
-						.setConnectionManager(HTTP_CLIENT_CONNECTION_MANAGER).build()) {
+						.setConnectionManager(HTTP_CLIENT_CONNECTION_MANAGER).setConnectionManagerShared(true)
+						.build()) {
 
 					HttpGet get = new HttpGet(target.toString());
 					if (encoding != null) {
@@ -97,7 +98,8 @@ public class User implements Callable<UserResult> {
 							throw new RuntimeException("Received unexpected HTTP code " + response.getCode());
 						}
 
-						System.out.println(EntityUtils.toString(response.getEntity()));
+						if (LOG.isLoggable(Level.FINEST))
+							LOG.finest(EntityUtils.toString(response.getEntity()));
 					}
 				}
 			}
