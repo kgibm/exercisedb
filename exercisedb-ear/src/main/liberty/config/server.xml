@@ -3,6 +3,7 @@
 
 	<featureManager>
 		<feature>webProfile-7.0</feature>
+		<feature>concurrent-1.0</feature>
 	</featureManager>
 
 	<variable name="HTTP_PORT" defaultValue="9080" />
@@ -12,6 +13,7 @@
 	<variable name="DB_NAME" defaultValue="database1" />
 	<variable name="DB_USER" defaultValue="dbuser1" />
 	<variable name="DB_PASS" defaultValue="password" />
+	<variable name="MAXRUNNERTHREADS" defaultValue="100" />
 
 	<keyStore password="password" />
 
@@ -48,4 +50,12 @@
 			portNumber="${DB_PORT}" databaseName="${DB_NAME}" user="${DB_USER}"
 			password="${DB_PASS}" />
 	</dataSource>
+
+	<managedExecutorService
+		jndiName="concurrent/executorService1">
+		<contextService>
+			<jeeMetadataContext />
+		</contextService>
+		<concurrencyPolicy max="${MAXRUNNERTHREADS}" />
+	</managedExecutorService>
 </server>

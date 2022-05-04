@@ -1,3 +1,4 @@
+<%@ page import="com.example.exercisedb.*, com.example.exercisedb.web.*" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html lang="en">
@@ -33,10 +34,10 @@
   <body>
     <h1>ExerciseDB Load Runner</h1>
     <p>Execute concurrent requests</p>
-    <form action="" method="get">
+    <form action="<%= LoadRunnerServlet.URL %>" method="get">
         <p>
-        	<label for="url">URL:</label><br />
-    		<input type="text" name="url" placeholder="URL" required />
+        	<label for="url">URL with context root (e.g. https://localhost:9443/exercisedb):</label><br />
+    		<input type="text" name="url" placeholder="URL with context root" required />
     	</p>
         <p>
         	<label for="activity">Activity:</label><br />

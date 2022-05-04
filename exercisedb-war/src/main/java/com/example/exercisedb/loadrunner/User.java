@@ -13,18 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package com.example.exercisedb;
+package com.example.exercisedb.loadrunner;
 
-import java.util.Random;
+import java.util.concurrent.Callable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-public class Utilities {
-	public static String getRandomString(int length) {
-		String chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
-		StringBuilder sb = new StringBuilder();
-		Random random = new Random();
-		while (sb.length() < length) {
-			sb.append(chars.charAt(random.nextInt(chars.length())));
-		}
-		return sb.toString();
+public class User implements Callable<UserResult> {
+
+	private static final String CLASS = User.class.getCanonicalName();
+	private static final Logger LOG = Logger.getLogger(CLASS);
+
+	@Override
+	public UserResult call() throws Exception {
+		if (LOG.isLoggable(Level.INFO))
+			LOG.info(this + " started");
+
+		return new UserResult();
 	}
 }
