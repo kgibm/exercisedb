@@ -5,6 +5,8 @@
 		<feature>webProfile-7.0</feature>
 	</featureManager>
 
+	<variable name="HTTP_PORT" defaultValue="9080" />
+	<variable name="HTTPS_PORT" defaultValue="9443" />
 	<variable name="DB_HOST" defaultValue="localhost" />
 	<variable name="DB_PORT" defaultValue="5432" />
 	<variable name="DB_NAME" defaultValue="database1" />
@@ -21,7 +23,7 @@
 	</basicRegistry>
 
 	<httpEndpoint host="*" id="defaultHttpEndpoint"
-		httpPort="9080" httpsPort="9443" />
+		httpPort="${HTTP_PORT}" httpsPort="${HTTPS_PORT}" />
 
 	<enterpriseApplication id="exercisedb-ear"
 		location="exercisedb-ear.ear" name="exercisedb-ear">

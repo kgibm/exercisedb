@@ -36,15 +36,17 @@ import com.example.exercisedb.Database;
 /**
  * Main database servlet
  */
-@WebServlet({ "/exercisedbServlet" })
+@WebServlet({ "/" + ExerciseDBServlet.URL })
 @ServletSecurity(@HttpConstraint(rolesAllowed = "users"))
 public class ExerciseDBServlet extends HttpServlet {
+
+	public static final String URL = "exercisedbServlet";
 
 	private static final String CLASS = ExerciseDBServlet.class.getCanonicalName();
 	private static final Logger LOG = Logger.getLogger(CLASS);
 
 	private static final long serialVersionUID = 1L;
-
+	
 	@Resource(lookup = Database.JNDINAME)
 	private DataSource database;
 

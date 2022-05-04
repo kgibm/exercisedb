@@ -19,6 +19,7 @@ public class Database {
 	public static final String JNDINAME = "jdbc/maindb";
 	public static final String SCHEMA = "test1";
 	public static final String TABLE = "table1";
+	public static final String FULLTABLE = SCHEMA + "." + TABLE;
 
 	private static final String RANDOM_STRING = Utilities.getRandomString(1024);
 
@@ -27,7 +28,7 @@ public class Database {
 		if (tableNames.size() == 0) {
 			try (Connection conn = getConnection(database)) {
 				executeSimpleQuery(conn, "CREATE SCHEMA IF NOT EXISTS " + SCHEMA + "");
-				executeSimpleQuery(conn, "CREATE TABLE IF NOT EXISTS " + SCHEMA + "." + TABLE
+				executeSimpleQuery(conn, "CREATE TABLE IF NOT EXISTS " + FULLTABLE
 						+ " (ID INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY, DATA1 TEXT)");
 				return true;
 			}
@@ -59,7 +60,7 @@ public class Database {
 		try (Connection conn = getConnection(database)) {
 			long id = -1;
 			try (PreparedStatement sql = conn.prepareStatement(
-					"INSERT INTO " + SCHEMA + "." + TABLE + " (DATA1) values (?)", Statement.RETURN_GENERATED_KEYS)) {
+					"INSERT INTO " + FULLTABLE + " (DATA1) values (?)", Statement.RETURN_GENERATED_KEYS)) {
 				sql.setString(1, RANDOM_STRING);
 				int insertedRows = sql.executeUpdate();
 				if (insertedRows == 1) {
@@ -79,7 +80,7 @@ public class Database {
 	public static String select(DataSource database, long id) throws SQLException {
 		try (Connection conn = getConnection(database)) {
 			try (PreparedStatement sql = conn
-					.prepareStatement("SELECT DATA1 FROM " + SCHEMA + "." + TABLE + " WHERE ID = ?")) {
+					.prepareStatement("SELECT DATA1 FROM " + FULLTABLE + " WHERE ID = ?")) {
 				sql.setLong(1, id);
 				try (ResultSet rs = sql.executeQuery()) {
 					if (rs.next()) {
@@ -95,7 +96,7 @@ public class Database {
 
 	public static long count(DataSource database) throws SQLException {
 		try (Connection conn = getConnection(database)) {
-			try (PreparedStatement sql = conn.prepareStatement("SELECT COUNT(*) FROM " + SCHEMA + "." + TABLE)) {
+			try (PreparedStatement sql = conn.prepareStatement("SELECT COUNT(*) FROM " + FULLTABLE)) {
 				try (ResultSet rs = sql.executeQuery()) {
 					if (rs.next()) {
 						long result = rs.getLong(1);
@@ -111,7 +112,7 @@ public class Database {
 	public static void delete(DataSource database, long id) throws SQLException {
 		try (Connection conn = getConnection(database)) {
 			try (PreparedStatement sql = conn
-					.prepareStatement("DELETE FROM " + SCHEMA + "." + TABLE + " WHERE ID = ?")) {
+					.prepareStatement("DELETE FROM " + FULLTABLE + " WHERE ID = ?")) {
 				sql.setLong(1, id);
 				int updatedRows = sql.executeUpdate();
 				if (updatedRows == 1) {
