@@ -1,0 +1,23 @@
+@startuml
+
+title Liberty + RDS on AWS
+
+skinparam monochrome true
+skinparam DefaultTextAlignment center
+scale 1.0
+
+actor user1 as " "
+
+rectangle region1 as "AWS Region" {
+  rectangle region1_vpc as "AWS VPC" {
+    node region1_loadrunner as "AWS EC2 Load Runner"
+    node region1_appserver1 as "AWS EC2 Liberty"
+    database region1_rds as "AWS RDS"
+  }
+}
+
+user1 --> region1_loadrunner
+region1_loadrunner --> region1_appserver1
+region1_appserver1 --> region1_rds
+
+@enduml

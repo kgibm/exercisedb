@@ -41,3 +41,7 @@ Browse to [http://localhost:9080/exercisedb/](http://localhost:9080/exercisedb/)
    MAXRUNNERTHREADS=100
    ```
 5. `wlp/bin/server start exercisedbServer`
+
+Example deployment architecture:
+
+<img src="exercisedb_aws.png" width="284" height="498" />
