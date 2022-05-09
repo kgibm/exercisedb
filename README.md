@@ -2,12 +2,6 @@
 
 ## Development
 
-Package and test the app:
-
-```
-mvn clean install
-```
-
 ### Start PostgreSQL locally
 
 ```
@@ -30,12 +24,17 @@ mvn clean liberty:run
 
 Browse to [http://localhost:9080/exercisedb/](http://localhost:9080/exercisedb/)
 
-### Run in the background
+### Package and run
 
-```
-mvn clean liberty:start
-```
-
-(stop with `mvn liberty:stop` from same directory)
-
-Browse to [http://localhost:9080/exercisedb/](http://localhost:9080/exercisedb/)
+1. `mvn clean package`
+2. Upload `exercisedb-ear/target/exercisedb-ear.zip`
+3. `unzip exercisedb-ear.zip`
+4. `vi wlp/usr/servers/exercisedbServer/bootstrap.properties`
+   ```
+   DB_HOST=...
+   DB_PORT=...
+   DB_NAME=...
+   DB_USER=...
+   DB_PASS=...
+   ```
+5. `wlp/bin/server start exercisedbServer`
