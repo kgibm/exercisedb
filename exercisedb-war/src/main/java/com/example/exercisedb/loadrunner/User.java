@@ -81,9 +81,13 @@ public class User implements Callable<UserResult> {
 		if (userName != null && userName.length() > 0) {
 			encoding = Base64.getEncoder().encodeToString((userName + ":" + password).getBytes());
 		}
+		
+		final UserResult result = new UserResult();
 
 		try {
 			for (int i = 0; i < totalRequests; i++) {
+				final long startTime = System.currentTimeMillis();
+				
 				try (CloseableHttpClient httpClient = HttpClients.custom()
 						.setConnectionManager(HTTP_CLIENT_CONNECTION_MANAGER).setConnectionManagerShared(true)
 						.build()) {
@@ -102,6 +106,13 @@ public class User implements Callable<UserResult> {
 							LOG.finest(EntityUtils.toString(response.getEntity()));
 					}
 				}
+				
+				result.count++;
+				final long executionTime = System.currentTimeMillis() - startTime;
+				result.totalExecutionTime += executionTime;
+				if (executionTime > result.maxExecutionTime) {
+					result.maxExecutionTime = executionTime;
+				}
 			}
 		} catch (Throwable t) {
 			if (LOG.isLoggable(Level.SEVERE)) {
@@ -112,7 +123,7 @@ public class User implements Callable<UserResult> {
 		if (LOG.isLoggable(Level.FINE))
 			LOG.fine(this + " finished " + totalRequests + " requests");
 
-		return new UserResult();
+		return result;
 	}
 
 	public URL getTarget() {

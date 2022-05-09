@@ -39,10 +39,11 @@ public class LoadRunner implements Callable<LoadRunnerResult> {
 
 	@Override
 	public LoadRunnerResult call() throws Exception {
-		if (LOG.isLoggable(Level.FINE))
-			LOG.fine(this + " called");
+		if (LOG.isLoggable(Level.FINER))
+			LOG.entering(CLASS, "call", this + " called");
 
 		final long started = System.currentTimeMillis();
+		LoadRunnerResult loadResult = new LoadRunnerResult();
 
 		try {
 			List<Future<UserResult>> futures = new ArrayList<>();
@@ -54,6 +55,7 @@ public class LoadRunner implements Callable<LoadRunnerResult> {
 			while (!futures.isEmpty()) {
 				Future<UserResult> future = futures.remove(0);
 				UserResult result = future.get();
+				loadResult.totalResults.add(result);
 
 				if (LOG.isLoggable(Level.FINE))
 					LOG.fine(this + " finished " + result);
@@ -67,9 +69,15 @@ public class LoadRunner implements Callable<LoadRunnerResult> {
 		final long finished = System.currentTimeMillis();
 
 		if (LOG.isLoggable(Level.INFO))
-			LOG.info(this + " finished in " + (finished - started) + " ms");
+			LOG.info("Load Runner finished in " + (finished - started) + " ms; requests: "
+					+ loadResult.totalResults.count + ", average execution: "
+					+ String.format("%.2f", loadResult.totalResults.getAverageExecutionTime()) + " ms, max execution: "
+					+ loadResult.totalResults.maxExecutionTime + " ms");
 
-		return new LoadRunnerResult();
+		if (LOG.isLoggable(Level.FINER))
+			LOG.exiting(CLASS, "call", this + " finished in " + (finished - started) + " ms: " + loadResult);
+
+		return loadResult;
 	}
 
 	private User createTask() {

@@ -18,6 +18,8 @@ package com.example.exercisedb.web;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -34,8 +36,8 @@ import javax.servlet.http.HttpServletResponse;
 import com.example.exercisedb.loadrunner.LoadRunner;
 
 /**
- * Load runner servlet. Example usage:
- * http://localhost:9080/exercisedb/loadrunnerServlet?url=https%3A%2F%2Flocalhost%3A9443%2Fexercisedb&user=user1&password=password&activity=insertselectdelete&concurrentusers=1&totalrequests=1
+ * Load runner servlet. Example usage: curl -u user1:password
+ * "http://localhost:9080/exercisedb/loadrunnerServlet?url=https%3A%2F%2Flocalhost%3A9443%2Fexercisedb&user=user1&password=password&activity=insertselectdelete&concurrentusers=1&totalrequests=1"
  */
 @WebServlet({ "/" + LoadRunnerServlet.URL })
 @ServletSecurity(@HttpConstraint(rolesAllowed = "users"))
@@ -113,10 +115,22 @@ public class LoadRunnerServlet extends HttpServlet {
 			loadRunner.setPassword(password);
 			executorService.submit(loadRunner);
 
-			writer = startResponse(request, response, started, HttpServletResponse.SC_OK);
-			writer.println(info);
+			// We don't actually wait for the result, instead redirect back to the form
+			// with a notification that the load runner started
 
-			finishResponse(writer, started);
+			response.sendRedirect("loadrunner.jsp?started="
+					+ URLEncoder.encode(new Date().toString(), StandardCharsets.UTF_8.toString()) + "&url="
+					+ URLEncoder.encode(urlString, StandardCharsets.UTF_8.toString()) + "&activity="
+					+ URLEncoder.encode(activity, StandardCharsets.UTF_8.toString()) + "&concurrentusers="
+					+ URLEncoder.encode(concurrentusersString, StandardCharsets.UTF_8.toString()) + "&totalrequests="
+					+ URLEncoder.encode(totalrequestsString, StandardCharsets.UTF_8.toString()) + "&user="
+					+ URLEncoder.encode(user, StandardCharsets.UTF_8.toString()) + "&password="
+					+ URLEncoder.encode(password, StandardCharsets.UTF_8.toString()));
+
+//			writer = startResponse(request, response, started, HttpServletResponse.SC_OK);
+//			writer.println(info);
+//
+//			finishResponse(writer, started);
 
 		} catch (Throwable e) {
 			if (writer == null) {
