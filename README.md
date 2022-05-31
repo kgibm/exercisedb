@@ -44,4 +44,4 @@ Browse to [http://localhost:9080/exercisedb/](http://localhost:9080/exercisedb/)
 
 Example deployment architecture:
 
-<img src="exercisedb_aws.png" width="284" height="498" />
+<img src="exercisedb_aws.png" width="250" height="386" />
